@@ -1,14 +1,20 @@
 import json
 import csv
 from pathlib import Path
-
 from model import SIR  
+from config import DEFAULT_CONFIG
 
-def run_scenario(beta, gamma, N=1000, I0=1, R0=0, days=160, dt=1):
+
+def run_scenario(beta, gamma, N=None, I0=None, R0=None, days=None, dt=None):
     """
-    Runs a single SIR simulation using the repo's SIR class.
-    Returns the full time series.
+    Runs a single SIR simulation using default config parameters unless overridden.
     """
+    N = N if N is not None else DEFAULT_CONFIG["N"]
+    I0 = I0 if I0 is not None else DEFAULT_CONFIG["I0"]
+    R0 = R0 if R0 is not None else DEFAULT_CONFIG["R0"]
+    days = days if days is not None else DEFAULT_CONFIG["days"]
+    dt = dt if dt is not None else DEFAULT_CONFIG["dt"]
+
     model = SIR(N=N, I0=I0, R0=R0, beta=beta, gamma=gamma)
     t, S, I, R = model.run(days=days, dt=dt)
 
