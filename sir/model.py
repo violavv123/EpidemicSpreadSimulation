@@ -129,3 +129,63 @@ def run(self, method="euler"):
         return self.run_rk4()
     else:
         raise ValueError("Method must be either 'euler' or 'rk4'.")
+
+"""
+When does the number of infected people reach its maximum, and how many people 
+are infected at that moment?
+"""
+def peak_infections(self):
+    if not self.model_run:
+        raise RuntimeError("Run the model first.")
+    idx = self.results["I"].idxmax()
+    return{
+        "time": float(self.results["time"][idx]),
+        "I_max": float(self.results["I"][idx])
+    }
+
+
+"""
+What proportion of the population ends up recovered at the end of the epidemic?
+"""
+def final_size(self):
+    if not self.model_run:
+        raise RuntimeError("Run the model first.")
+    return float(self.results["R"].iloc[-1]/ self.N)
+
+
+"""
+When does the epidemic start to decline? - each infected person infects less than
+on person on average
+"""
+def time_Rt_below_one(self):
+    Rt = self.effective_Rt()
+    below_one = Rt[Rt < 1]
+    if below_one.empty:
+        return None
+    idx = below_one.index[0]
+    return float(self.results["time"][idx])
+
+
+"""
+How long does the epidemic last?
+"""
+def epidemic_duration(self, threshold: float = 1.0):
+    if not self.model_run:
+        raise RuntimeError("Run the model first.")
+    df = self.results
+    ending = df[df["I"] < threshold]
+
+    if ending.empty:
+        return None
+
+    return float(ending["time"].iloc[0])
+
+
+"""
+How many people one infected person infects at each moment of the epidemic?
+"""
+def effective_Rt(self):
+    if not self.model_run:
+        raise RuntimeError("Run the model first.")
+    Rt = self.R0 * (self.results["S"] / self.N)
+    return Rt
