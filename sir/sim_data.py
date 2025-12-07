@@ -1,8 +1,5 @@
-import json
-import csv
-from pathlib import Path
-from model import SIR  
-from config import DEFAULT_CONFIG
+from sir.model import SIR
+from sir.config import DEFAULT_CONFIG
 
 
 def run_scenario(beta, gamma, N=None, I0=None, R0=None, days=None, dt=None):
