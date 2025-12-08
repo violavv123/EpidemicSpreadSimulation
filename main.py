@@ -180,6 +180,48 @@ def main() -> None:
     ax.plot(results["time"], results["I"], label = "Infected")
     ax.plot(results["time"], results["R"], label = "Recovered")
 
+    peak = model.peak_infections()
+    final_size = model.final_size()
+    Rt_time = model.time_Rt_below_one()
+    duration = model.epidemic_duration()
+
+    try:
+        R0_value = model.R0
+    except AttributeError:
+        R0_value = model.R0_value
+
+
+    if Rt_time is None:
+        Rt_text = "R(t) < 1: never"
+    else:
+        Rt_text = f"R(t) < 1 at t = {Rt_time:.1f}"
+
+    if duration is None:
+        duration_text = "Duration: not ended"
+    else:
+        duration_text = f"Duration ≈ {duration:.1f}"
+
+
+    summary_text = (
+        f"R0 = {R0_value:.2f}\n"
+        f"Peak I = {peak['I_max']:.1f} at t = {peak['time']:.1f}\n"
+        f"Final size = {final_size:.2f}\n"
+        f"{Rt_text}\n"
+        f"{duration_text}"
+    )
+
+    ax.text(
+        0.02, 0.98,
+        summary_text,
+        transform=ax.transAxes,
+        va="top",
+        fontsize=9,
+        bbox=dict(boxstyle="round", facecolor="white", alpha=0.8),
+    )
+
+    ax.scatter(peak["time"], peak["I_max"], color="red", zorder=5, label="Peak I")
+    ax.axvline(peak["time"], color="red", linestyle="--", alpha=0.5)
+
     ax.set_xlabel("Time")
     ax.set_ylabel("Population")
     ax.set_title("SIR Model Dynamics")
