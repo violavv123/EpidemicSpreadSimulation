@@ -71,7 +71,7 @@ def plot_results(df, title="SIR Model Dynamics"):
 
 def menu():
     print("\n******** MAIN MENU ********")
-    print("1. Manual simulation (your original code)")
+    print("1. Manual simulation")
     print("2. Run predefined scenario")
     print("3. Run multiple scenarios")
     print("4. Exit")
