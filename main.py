@@ -119,9 +119,6 @@ def load_covid_scenarios(folder="covid_data"):
                 print(f"Failed to load {file}: {e}")
     return scenarios
 
-def predefined_simulation():
- 
- import pandas as pd 
 
 def predefined_simulation():
     import pandas as pd
