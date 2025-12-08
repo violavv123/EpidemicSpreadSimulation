@@ -16,7 +16,8 @@ def run_scenario(beta, gamma, N=None, I0=None, R0=None, days=None, dt=None):
     dt = dt if dt is not None else DEFAULT_CONFIG["dt"]
 
     model = SIR(N=N, I0=I0, R0=R0, beta=beta, gamma=gamma)
-    t, S, I, R = model.run(days=days, dt=dt)
+    results = model.run(method="euler")
+    t, S, I, R = results["time"], results["S"], results["I"], results["R"]
 
     return {
         "parameters": {
@@ -86,9 +87,9 @@ def save_to_csv(simulation_results, filepath):
 
 def standard_scenarios():
     return {
-        "fast_spread":  {"beta": 0.5, "gamma": 0.1, "N": 1000, "I0": 10},
-        "slow_spread":  {"beta": 0.15, "gamma": 0.1, "N": 1000, "I0": 10},
-        "high_recovery": {"beta": 0.25, "gamma": 0.35, "N": 1000, "I0": 10},
+        "Fast":  {"beta": 0.5, "gamma": 0.1, "N": 1000, "I0": 10},
+        "Slow":  {"beta": 0.15, "gamma": 0.1, "N": 1000, "I0": 10},
+        "High": {"beta": 0.25, "gamma": 0.35, "N": 1000, "I0": 10},
     }
 
 
