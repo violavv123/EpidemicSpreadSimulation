@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 from sir.model import SIR
+import pandas as pd
 from sir.sim_data import (
     run_multiple_scenarios,
     save_to_csv,
-    standard_scenarios
 )
 import os,json
 
@@ -101,38 +101,84 @@ def manual_simulation():
     plot_results(df)
 
 
-def predefined_simulation():
-    scenarios = standard_scenarios()
-    print("\nAvailable scenarios:")
-    for name in scenarios:
-        print(" -", name)
+def load_covid_scenarios(folder="covid_data"):
+  
+    scenarios = {}
+    if not os.path.exists(folder):
+        print(f"Folder '{folder}' not found.")
+        return scenarios
 
-    choice = input("Choose scenario (spread simulation): ").strip()
-    if choice not in scenarios:
-        print("Invalid choice")
+    for file in os.listdir(folder):
+        if file.endswith(".csv"):
+            name = file.replace(".csv", "")
+            path = os.path.join(folder, file)
+            try:
+                df = pd.read_csv(path)
+                scenarios[name] = df
+            except Exception as e:
+                print(f"Failed to load {file}: {e}")
+    return scenarios
+
+def predefined_simulation():
+ 
+ import pandas as pd 
+
+def predefined_simulation():
+    import pandas as pd
+import os
+
+def predefined_simulation():
+    file_path = "covid_data/country_wise_latest.csv" 
+
+    if not os.path.exists(file_path):
+        print(f"Error: File not found at {file_path}")
         return
 
-    params = scenarios[choice]
+    df = pd.read_csv(file_path)
 
-    model = SIR(
-        N=params.get("N", 1000),
-        I0=params.get("I0", 10),
-        R0=params.get("R0", 0),
-        beta=params.get("beta", 0.3),
-        gamma=params.get("gamma", 0.1),
-        T=params.get("T", 300.0),
-        dt=params.get("dt", 1.0),
-    )
+    df.columns = [col.strip().replace(" ", "_").replace("/", "_").lower() for col in df.columns]
 
-    df = model.run(method=params.get("method", "euler"))
+    total_confirmed = df['confirmed'].sum()
+    total_deaths = df['deaths'].sum()
+    total_recovered = df['recovered'].sum()
+    total_active = df['active'].sum()
 
-    os.makedirs("output", exist_ok=True)
-    with open(f"output/{choice}.json", "w") as f:
-        json.dump(df.to_dict(orient="list"), f, indent=4)
+    print("\n--- Global COVID-19 Stats ---")
+    print(f"Total Confirmed Cases: {total_confirmed}")
+    print(f"Total Deaths: {total_deaths}")
+    print(f"Total Recovered: {total_recovered}")
+    print(f"Total Active Cases: {total_active}")
 
-    print(f"Saved results to output/{choice}.json")
+    country = input("\nEnter a country name to see stats: ").strip()
 
-    plot_results(df, title=f"SIR Dynamics: {choice}")
+    country_data = df[df['country_region'].str.lower() == country.lower()]
+
+    if country_data.empty:
+        print(f"No data found for '{country}'.")
+        return
+
+    country_data = country_data.iloc[0]
+
+    confirmed = int(country_data['confirmed'])
+    active = int(country_data['active'])
+    recovered = int(country_data['recovered'])
+    deaths = int(country_data['deaths'])
+
+    new_infections = int(active * 0.05)
+    predicted_active = active + new_infections - int(recovered * 0.01) - int(deaths * 0.01)
+
+    fatality_rate = (deaths / confirmed) * 100 if confirmed > 0 else 0
+    recovery_rate = (recovered / confirmed) * 100 if confirmed > 0 else 0
+
+    print(f"\n--- COVID-19 Stats for {country_data['country_region']} ---")
+    print(f"Confirmed Cases: {confirmed}")
+    print(f"Active Cases: {active}")
+    print(f"Recovered: {recovered}")
+    print(f"Deaths: {deaths}")
+    print(f"Fatality Rate: {fatality_rate:.2f}%")
+    print(f"Recovery Rate: {recovery_rate:.2f}%")
+    print(f"Predicted New Infections Next Period: {new_infections}")
+    print(f"Predicted Active Cases Next Period: {predicted_active}")
 
 
 
