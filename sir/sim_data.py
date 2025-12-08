@@ -47,5 +47,47 @@ def run_multiple_scenarios(scenarios):
         all_results.append(run_scenario(**sc))
     return all_results
 
+def save_to_json(data, filepath):
+    Path(filepath).parent.mkdir(parents=True, exist_ok=True)
+    with open(filepath, "w") as f:
+        json.dump(data, f, indent=4)
+
+
+def load_json(filepath):
+    with open(filepath) as f:
+        return json.load(f)
+
+
+def save_to_csv(simulation_results, filepath):
+    """
+    Accepts a list of simulation dictionaries (from run_multiple_scenarios)
+    """
+    Path(filepath).parent.mkdir(parents=True, exist_ok=True)
+
+    with open(filepath, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["beta", "gamma", "t", "S", "I", "R"])
+
+        for entry in simulation_results:
+            beta = entry["parameters"]["beta"]
+            gamma = entry["parameters"]["gamma"]
+            t = entry["results"]["t"]
+            S = entry["results"]["S"]
+            I = entry["results"]["I"]
+            R = entry["results"]["R"]
+
+            for ti, si, ii, ri in zip(t, S, I, R):
+                writer.writerow([beta, gamma, ti, si, ii, ri])
+
+
+
+def standard_scenarios():
+    return {
+        "fast_spread":  {"beta": 0.5, "gamma": 0.1, "N": 1000, "I0": 10},
+        "slow_spread":  {"beta": 0.15, "gamma": 0.1, "N": 1000, "I0": 10},
+        "high_recovery": {"beta": 0.25, "gamma": 0.35, "N": 1000, "I0": 10},
+    }
+
+
 
 
