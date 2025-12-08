@@ -50,43 +50,45 @@ def print_summary(model: SIR) -> None:
     print("*************************************************")
 
 
-    def main() -> None:
-        print("********* SIR Epidemic Simulation **********")
 
-        N = get_int_input("Total population N", 1000)
-        I0 = get_int_input("Initial infected I0", 10)
-        R0 = get_int_input("Initial recovered R0", 0)
+def main() -> None:
+    print("********* SIR Epidemic Simulation **********")
 
-        beta = get_float_input("Transmission rate beta", 0.3)
-        gamma = get_float_input("Recovery rate gamma", 0.1)
+    N = get_int_input("Total population N", 1000)
+    I0 = get_int_input("Initial infected I0", 10)
+    R0 = get_int_input("Initial recovered R0", 0)
 
-        T = get_float_input("Total simulation time T", 300.0)
-        dt = get_float_input("Time step dt", 1.0)
+    beta = get_float_input("Transmission rate beta", 0.3)
+    gamma = get_float_input("Recovery rate gamma", 0.1)
 
-        method = input("Numerical method ('euler' or 'rk4') [euler]: ").strip().lower()
-        if method == "":
-            method = "euler"
-        if method not in ("euler", "rk4"):
-            print("Unknown method, defaulting to euler'.")
-            method = "euler"
+    T = get_float_input("Total simulation time T", 300.0)
+    dt = get_float_input("Time step dt", 1.0)
 
-        model = SIR(N = N, I0 = I0, R0 = R0, beta = beta, gamma = gamma, T = T, dt = dt)
-        results = model.run( method = method)
+    method = input("Numerical method ('euler' or 'rk4') [euler]: ").strip().lower()
+    if method == "":
+        method = "euler"
+    if method not in ("euler", "rk4"):
+        print("Unknown method, defaulting to euler'.")
+        method = "euler"
 
-        print_summary(model)
+    model = SIR(N = N, I0 = I0, R0 = R0, beta = beta, gamma = gamma, T = T, dt = dt)
+    results = model.run( method = method)
 
-        fig, ax = plt.subplots()
-        ax.plot(results["time"], results["S"], label = "Susceptible")
-        ax.plot(results["time"], results["I"], label = "Infected")
-        ax.plot(results["time"], results["R"], label = "Recovered")
+    print_summary(model)
 
-        ax.set_xlabel("Time")
-        ax.set_ylabel("Population")
-        ax.set_title("SIR Model Dynamics")
-        ax.legend()
+    fig, ax = plt.subplots()
+    ax.plot(results["time"], results["S"], label = "Susceptible")
+    ax.plot(results["time"], results["I"], label = "Infected")
+    ax.plot(results["time"], results["R"], label = "Recovered")
 
-        plt.tight_layout()
-        plt.show()
+    ax.set_xlabel("Time")
+    ax.set_ylabel("Population")
+    ax.set_title("SIR Model Dynamics")
+    ax.legend()
 
-        if __name__ == "__main__":
+    plt.tight_layout()
+    plt.show()
+
+
+if __name__ == "__main__":
             main()
