@@ -167,7 +167,7 @@ def main() -> None:
     if method == "":
         method = "euler"
     if method not in ("euler", "rk4"):
-        print("Unknown method, defaulting to euler'.")
+        print("Unknown method, defaulting to 'euler'.")
         method = "euler"
 
     model = SIR(N = N, I0 = I0, R0 = R0, beta = beta, gamma = gamma, T = T, dt = dt)
@@ -184,11 +184,6 @@ def main() -> None:
     final_size = model.final_size()
     Rt_time = model.time_Rt_below_one()
     duration = model.epidemic_duration()
-
-    try:
-        R0_value = model.R0
-    except AttributeError:
-        R0_value = model.R0_value
 
 
     if Rt_time is None:
