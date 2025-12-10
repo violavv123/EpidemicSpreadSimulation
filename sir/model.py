@@ -41,6 +41,7 @@ class SIR:
         """
         self.N = N
         self.I0 = I0
+        self.R_init = R0
         self.S0 = N - I0 - R0
 
         self.beta = beta
@@ -63,7 +64,7 @@ class SIR:
     def run_euler(self) -> pd.DataFrame:
         S = [self.S0]
         I = [self.I0]
-        R = [self.R0]
+        R = [self.R_init]
 
         for __ in range(1, self.steps):
             S_prev, I_prev, R_prev = S[-1], I[-1], R[-1]
@@ -98,7 +99,7 @@ class SIR:
 
         S = [self.S0]
         I = [self.I0]
-        R = [self.R0]
+        R = [self.R_init]
 
         for __ in range(1, self.steps):
             S_prev, I_prev, R_prev = S[-1], I[-1], R[-1]

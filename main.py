@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
 from sir.model import SIR
 import pandas as pd
+import os
+import json
 from sir.sim_data import (
     run_multiple_scenarios,
     save_to_csv,
 )
-import os,json
 
 def get_int_input(prompt: str, default: int) -> int:
     s = input(f"{prompt} [{default}]: ").strip()
@@ -121,10 +122,6 @@ def load_covid_scenarios(folder="covid_data"):
 
 
 def predefined_simulation():
-    import pandas as pd
-import os
-
-def predefined_simulation():
     file_path = "covid_data/country_wise_latest.csv" 
 
     if not os.path.exists(file_path):
@@ -160,6 +157,7 @@ def predefined_simulation():
     active = int(country_data['active'])
     recovered = int(country_data['recovered'])
     deaths = int(country_data['deaths'])
+    population = int(country_data["population"])
 
     new_infections = int(active * 0.05)
     predicted_active = active + new_infections - int(recovered * 0.01) - int(deaths * 0.01)
@@ -177,6 +175,30 @@ def predefined_simulation():
     print(f"Predicted New Infections Next Period: {new_infections}")
     print(f"Predicted Active Cases Next Period: {predicted_active}")
 
+    N = population
+    I0 = active
+    R0_init = recovered + deaths
+    S0_check = N - I0 - R0_init
+
+    if S0_check < 0:
+        print("Warning: N < I0 + R0 (data inconsistent with SR). Adjust N or input data.")
+
+    beta = 0.3
+    gamma = 1.0 / 14.0
+
+    T = 160.0
+    dt = 1.0
+
+    method = input("Numerical method ('euler' or 'rk4') [euler]: ").strip().lower()
+    if method not in ("euler", "rk4"):
+        method = "euler"
+
+    model = SIR(N = N, I0 = I0, R0 = R0_init, beta = beta, gamma = gamma, T = T, dt = dt)
+
+    df_sir = model.run(method = method)
+    print_summary(model)
+
+    plot_results(df_sir, title=f"SIR Model Dynamics - {country_data['country_region']}")
 
 
 def multiple_scenario_simulation():
