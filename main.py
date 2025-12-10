@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 from sir.model import SIR
 import pandas as pd
 import os
-import json
 from sir.sim_data import (
     run_multiple_scenarios,
     save_to_csv,
@@ -30,42 +29,59 @@ def get_float_input(prompt: str, default: float) -> float:
         return default
 
 
-def print_summary(model: SIR) -> None:
-    print("\n************** EPIDEMIC SUMMARY **************")
-    print(f"Basic reproduction number R0: {model.R0:.3f}")
+def format_summary(model: SIR) -> str:
+    lines = []
+    lines.append(f"R0 (basic reproduction): {model.R0:.3f}")
 
     peak = model.peak_infections()
-    print("Peak infections:")
-    print(f"  - time  = {peak['time']:.2f}")
-    print(f"  - I_max = {peak['I_max']:.2f}")
+    lines.append(f"Peak infections at t = {peak['time']:.2f}")
+    lines.append(f"I_max = {peak['I_max']:.2f}")
 
     final_size = model.final_size()
-    print(f"Final epidemic size: {final_size:.3f} (fraction of population)")
+    lines.append(f"Final size: {final_size:.3f} of N")
 
     Rt_time = model.time_Rt_below_one()
     if Rt_time is None:
-        print("R(t) never dropped below 1 during the simulation.")
+        lines.append("R(t) never < 1")
     else:
-        print(f"Time when R(t) first drops below 1: t = {Rt_time:.2f}")
+        lines.append(f"R(t) < 1 from t = {Rt_time:.2f}")
 
     duration = model.epidemic_duration()
     if duration is None:
-        print("Epidemic did not end (I(t) never fell below threshold).")
+        lines.append("Epidemic never ends (I >= threshold)")
     else:
-        print(f"Epidemic duration (I(t) < 1): {duration:.2f}")
+        lines.append(f"Epidemic ends at t = {duration:.2f}")
 
+    return "\n".join(lines)
+
+def print_summary(model: SIR) -> None:
+    print("\n************** EPIDEMIC SUMMARY **************")
+    print(format_summary(model))
     print("*************************************************")
 
-def plot_results(df, title="SIR Model Dynamics"):
-    plt.plot(df["time"], df["S"], label="Susceptible")
-    plt.plot(df["time"], df["I"], label="Infected")
-    plt.plot(df["time"], df["R"], label="Recovered")
+def plot_results(df, title="SIR Model Dynamics", summary_text : str | None = None):
+    fig, ax = plt.subplots()
 
-    plt.xlabel("Time")
-    plt.ylabel("Population")
-    plt.title(title)
-    plt.legend()
+    ax.plot(df["time"], df["S"], label="Susceptible")
+    ax.plot(df["time"], df["I"], label="Infected")
+    ax.plot(df["time"], df["R"], label="Recovered")
+
+    ax.set_xlabel("Time")
+    ax.set_ylabel("Population")
+    ax.set_title(title)
+    ax.legend()
     plt.tight_layout()
+
+    if summary_text is not None:
+        ax.text(
+            0.02, 0.98,
+            summary_text,
+            transform = ax.transAxes,
+            va = "top",
+            ha = "left",
+            fontsize = 8,
+            bbox = dict(boxstyle = "round", alpha = 0.3)
+        )
     plt.show()
 
 
@@ -98,27 +114,9 @@ def manual_simulation():
 
     model = SIR(N=N, I0=I0, R0=R0, beta=beta, gamma=gamma, T=T, dt=dt)
     df = model.run(method=method)
+    summary_text = format_summary(model)
     print_summary(model)
-    plot_results(df)
-
-
-def load_covid_scenarios(folder="covid_data"):
-  
-    scenarios = {}
-    if not os.path.exists(folder):
-        print(f"Folder '{folder}' not found.")
-        return scenarios
-
-    for file in os.listdir(folder):
-        if file.endswith(".csv"):
-            name = file.replace(".csv", "")
-            path = os.path.join(folder, file)
-            try:
-                df = pd.read_csv(path)
-                scenarios[name] = df
-            except Exception as e:
-                print(f"Failed to load {file}: {e}")
-    return scenarios
+    plot_results(df, title = "SIR Model Dynamics (Manual)", summary_text = summary_text)
 
 
 def predefined_simulation():
@@ -165,6 +163,14 @@ def predefined_simulation():
     fatality_rate = (deaths / confirmed) * 100 if confirmed > 0 else 0
     recovery_rate = (recovered / confirmed) * 100 if confirmed > 0 else 0
 
+    choice = input("\nUse predicted active as initial infected for SIR? (y/n): ").strip().lower()
+    if choice == "y":
+        I0 = predicted_active
+        print(f"Using predicted active = {predicted_active} as I0 for SIR.")
+    else:
+        I0 = active
+        print(f"Using current active = {active} as I0 for SIR.")
+
     print(f"\n--- COVID-19 Stats for {country_data['country_region']} ---")
     print(f"Confirmed Cases: {confirmed}")
     print(f"Active Cases: {active}")
@@ -176,12 +182,12 @@ def predefined_simulation():
     print(f"Predicted Active Cases Next Period: {predicted_active}")
 
     N = population
-    I0 = active
     R0_init = recovered + deaths
     S0_check = N - I0 - R0_init
 
     if S0_check < 0:
         print("Warning: N < I0 + R0 (data inconsistent with SR). Adjust N or input data.")
+        return
 
     beta = 0.3
     gamma = 1.0 / 14.0
@@ -196,9 +202,16 @@ def predefined_simulation():
     model = SIR(N = N, I0 = I0, R0 = R0_init, beta = beta, gamma = gamma, T = T, dt = dt)
 
     df_sir = model.run(method = method)
+    base_summary = format_summary(model)
+    extra = (
+        f"\nNew infections (simple model): {new_infections}"
+        f"\nPredicted active (simple model): {predicted_active}"
+    )
+    summary_text = base_summary + extra
     print_summary(model)
+    print(extra)
 
-    plot_results(df_sir, title=f"SIR Model Dynamics - {country_data['country_region']}")
+    plot_results(df_sir, title=f"SIR Model Dynamics - {country_data['country_region']}", summary_text = summary_text)
 
 
 def multiple_scenario_simulation():
