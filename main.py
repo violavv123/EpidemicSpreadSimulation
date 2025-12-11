@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from sir.model import SIR
 import pandas as pd
 import os
+from sir.variants import StochasticSIR, SEIR
 
 
 def get_int_input(prompt: str, default: int) -> int:
@@ -87,8 +88,10 @@ def menu():
     print("\n******** MAIN MENU ********")
     print("1. Manual simulation")
     print("2. Run predefined scenario")
-    print("3. Exit")
-    return input("Choose (1–3): ").strip()
+    print("3. Stochastic SIR Simulation")
+    print("4. SEIR Simulation")
+    print("5. Exit")
+    return input("Choose (1–5): ").strip()
 
 
 def manual_simulation():
@@ -209,6 +212,47 @@ def predefined_simulation():
 
     plot_results(df_sir, title=f"SIR Model Dynamics - {country_data['country_region']}", summary_text = summary_text)
 
+def run_stochastic_simulation():
+    print("\n***** Stochastic SIR Simulation *****")
+
+    N = get_int_input("Total population N", 1000)
+    I0 = get_int_input("Initial infected I0", 10)
+    R0 = get_int_input("Initial recovered R0", 0)
+
+    beta = get_float_input("Transmission rate beta", 0.3)
+    gamma = get_float_input("Recovery rate gamma", 0.1)
+
+    steps = get_int_input("Simulation steps", 160)
+
+    model = StochasticSIR(N=N, I0=I0, R0=R0, beta=beta, gamma=gamma)
+
+    S, I, R = model.run_stochastic(steps=steps)
+
+    df = pd.DataFrame({"time": range(len(S)), "S": S, "I": I, "R": R})
+    plot_results(df, title="Stochastic SIR Model")
+
+def run_seir_simulation():
+    print("\n***** SEIR Simulation *****")
+
+    N = get_int_input("Total population N", 1000)
+    S0 = get_int_input("Initial susceptible S0", 990)
+    E0 = get_int_input("Initial exposed E0", 5)
+    I0 = get_int_input("Initial infected I0", 5)
+    R0 = get_int_input("Initial recovered R0", 0)
+
+    beta = get_float_input("Transmission rate beta", 0.3)
+    gamma = get_float_input("Recovery rate gamma", 0.1)
+    sigma = get_float_input("Incubation rate sigma", 0.2)
+
+    steps = get_int_input("Simulation steps", 160)
+
+    model = SEIR(N, S0, E0, I0, R0, beta, gamma, sigma)
+
+    S, E, I, R = model.run(steps=steps)
+
+    df = pd.DataFrame({"time": range(len(S)), "S": S, "E": E, "I": I, "R": R})
+    plot_results(df, title="SEIR Model Dynamics")
+
 
 def main():
     while True:
@@ -218,10 +262,17 @@ def main():
         elif choice == "2":
             predefined_simulation()
         elif choice == "3":
+            run_stochastic_simulation()
+
+        elif choice == "4":
+            run_seir_simulation()
+
+        elif choice == "5":
             print("Exiting program...")
             break
+
         else:
-            print("Invalid choice. Please select 1–4.")
+            print("Invalid choice. Please select 1–5.")
 
 
 if __name__ == "__main__":
