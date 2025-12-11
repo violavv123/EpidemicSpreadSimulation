@@ -2,10 +2,7 @@ import matplotlib.pyplot as plt
 from sir.model import SIR
 import pandas as pd
 import os
-from sir.sim_data import (
-    run_multiple_scenarios,
-    save_to_csv,
-)
+
 
 def get_int_input(prompt: str, default: int) -> int:
     s = input(f"{prompt} [{default}]: ").strip()
@@ -90,9 +87,8 @@ def menu():
     print("\n******** MAIN MENU ********")
     print("1. Manual simulation")
     print("2. Run predefined scenario")
-    print("3. Run multiple scenarios")
-    print("4. Exit")
-    return input("Choose (1–4): ").strip()
+    print("3. Exit")
+    return input("Choose (1–3): ").strip()
 
 
 def manual_simulation():
@@ -214,20 +210,6 @@ def predefined_simulation():
     plot_results(df_sir, title=f"SIR Model Dynamics - {country_data['country_region']}", summary_text = summary_text)
 
 
-def multiple_scenario_simulation():
-    print("\nRunning 3 demo scenarios...")
-
-    scenarios = [
-        {"beta": 0.3, "gamma": 0.1, "N": 500},
-        {"beta": 0.5, "gamma": 0.1, "N": 500},
-        {"beta": 0.2, "gamma": 0.2, "N": 500},
-    ]
-
-    results = run_multiple_scenarios(scenarios)
-    save_to_csv(results, "output/multi_scenarios.csv")
-
-    print("Saved CSV to output/multi_scenarios.csv")
-
 def main():
     while True:
         choice = menu()
@@ -236,8 +218,6 @@ def main():
         elif choice == "2":
             predefined_simulation()
         elif choice == "3":
-            multiple_scenario_simulation()
-        elif choice == "4":
             print("Exiting program...")
             break
         else:
