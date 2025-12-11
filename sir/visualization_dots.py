@@ -2,15 +2,16 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import numpy as np
 
-def animate_sir_human(df, save_path=None):
+
+def animate_sir_dots(df, save_path=None):
     """
-    Animate SIR with moving colored dots.
+    Animate SIR using colored dots to represent people.
     df must contain: time, S, I, R
     """
-    # Total population
+    # Total population (rounded to int)
     N = int(df["S"].iloc[0] + df["I"].iloc[0] + df["R"].iloc[0])
     
-    # Initial random positions
+    # Random positions for each individual
     x = np.random.rand(N)
     y = np.random.rand(N)
 
@@ -19,49 +20,42 @@ def animate_sir_human(df, save_path=None):
     ax.set_ylim(0,1)
     ax.set_xticks([])
     ax.set_yticks([])
-    ax.set_title("SIR Simulation (Dynamic)")
 
-    # Initial scatter (all susceptible)
+    # Initial scatter plot (all susceptible)
     colors = ["blue"] * N
     scatter = ax.scatter(x, y, c=colors, s=50)
 
-    # Velocity for each individual for movement
-    vx = (np.random.rand(N) - 0.5) * 0.01
-    vy = (np.random.rand(N) - 0.5) * 0.01
-
     def update(frame):
-        nonlocal x, y
-
-        # Move people
-        x += vx
-        y += vy
-
-        # Bounce off walls
-        x = np.clip(x, 0, 1)
-        y = np.clip(y, 0, 1)
-
         # Get current counts
         S_count = int(df["S"].iloc[frame])
         I_count = int(df["I"].iloc[frame])
         R_count = int(df["R"].iloc[frame])
 
-        # Build colors array
+        # Build new colors array for this frame
         frame_colors = ["blue"]*S_count + ["red"]*I_count + ["green"]*R_count
 
-        # Pad/truncate to N
+        # Pad with blue if due to rounding we have fewer than N
         if len(frame_colors) < N:
             frame_colors += ["blue"]*(N - len(frame_colors))
         elif len(frame_colors) > N:
             frame_colors = frame_colors[:N]
 
-        # Update scatter
-        scatter.set_offsets(np.c_[x, y])
+        # Update scatter colors
         scatter.set_color(frame_colors)
-        ax.set_title(f"Time: {df['time'].iloc[frame]:.0f} | S:{S_count} I:{I_count} R:{R_count}")
+
+        # 🔵 ADD COMPLEXITY HERE
+        complexity = f"O({S_count + I_count + R_count})"   # O(N)
+
+        ax.set_title(
+            f"S (blue):{S_count} I(red):{I_count}| "
+            f"Complexity: {complexity}"
+        )
+
         return scatter,
 
     ani = FuncAnimation(fig, update, frames=len(df), interval=200, blit=True)
 
+    # Optionally save as GIF
     if save_path:
         ani.save(save_path, writer="imagemagick", fps=5)
 

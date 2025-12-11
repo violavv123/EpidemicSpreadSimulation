@@ -25,5 +25,8 @@ def animate_sir(df):
         line_R.set_data(df["time"][:frame], df["R"][:frame])
         return line_S, line_I, line_R
 
+    ax.set_title(f"Graph Visualisation Animated SIR Model")
+
     ani = FuncAnimation(fig, update, frames=len(df), interval=50, blit=True)
     plt.show()
+
