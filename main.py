@@ -95,6 +95,37 @@ def menu():
     print("5. Exit")
     return input("Choose (1–5): ").strip()
 
+def choose_visualization(df, summary_text=None, country_name=None):
+    print("\n**** Choose Visualization ****")
+    print("1. Animated graph (lines)")
+    print("2. Animated dots map (emoji dots)")
+    print("3. Static graph (plot)")
+    print("4. Show ALL visualizations")
+    choice = input("Select (1–4): ").strip()
+
+    title = "SIR Model Dynamics"
+    if country_name:
+        title = f"SIR Model Dynamics - {country_name}"
+
+    if choice == "1":
+        animate_sir(df)
+
+    elif choice == "2":
+        animate_sir_dots(df)
+
+    elif choice == "3":
+        plot_results(df, title=title, summary_text=summary_text)
+
+    elif choice == "4":
+        animate_sir_dots(df)
+        animate_sir(df)
+        plot_results(df, title=title, summary_text=summary_text)
+
+    else:
+        print("Invalid choice, showing animated graph by default.")
+        animate_sir(df)
+
+
 
 def manual_simulation():
     print("********* SIR Epidemic Simulation **********")
@@ -117,9 +148,7 @@ def manual_simulation():
     df = model.run(method=method)
     summary_text = format_summary(model)
     print_summary(model)
-    animate_sir_dots(df)
-    animate_sir(df)
-    plot_results(df, title = "SIR Model Dynamics (Manual)", summary_text = summary_text)
+    choose_visualization(df, summary_text=summary_text, country_name=None)
 
 
 def predefined_simulation():
@@ -213,8 +242,8 @@ def predefined_simulation():
     summary_text = base_summary + extra
     print_summary(model)
     print(extra)
-    animate_sir(df_sir)
-    plot_results(df_sir, title=f"SIR Model Dynamics - {country_data['country_region']}", summary_text = summary_text)
+    plot_results(df_sir, title=f"SIR Model Dynamics - {country_data['country_region']}", summary_text=summary_text)
+
 
 
 def run_stochastic_simulation():
@@ -235,9 +264,8 @@ def run_stochastic_simulation():
 
     df = pd.DataFrame({"time": range(len(S)), "S": S, "I": I, "R": R})
     
-    animate_sir_dots(df)
-    animate_sir(df)
-    plot_results(df, title="Stochastic SIR Model")
+    choose_visualization(df, summary_text=None, country_name="Stochastic SIR Model")
+
 
 
 def run_seir_simulation():
@@ -261,9 +289,8 @@ def run_seir_simulation():
 
     df = pd.DataFrame({"time": range(len(S)), "S": S, "E": E, "I": I, "R": R})
     
-    animate_sir_dots(df)
-    animate_sir(df)
-    plot_results(df, title="SEIR Model Dynamics")
+    choose_visualization(df, summary_text=None, country_name="SEIR Model Dynamics")
+
     
 
 
