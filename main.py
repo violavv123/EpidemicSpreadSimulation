@@ -3,6 +3,7 @@ from sir.model import SIR
 import pandas as pd
 import os
 from sir.variants import StochasticSIR, SEIR
+from sir.visualization import animate_sir
 
 
 def get_int_input(prompt: str, default: int) -> int:
@@ -115,6 +116,7 @@ def manual_simulation():
     df = model.run(method=method)
     summary_text = format_summary(model)
     print_summary(model)
+    animate_sir(df)
     plot_results(df, title = "SIR Model Dynamics (Manual)", summary_text = summary_text)
 
 
@@ -210,7 +212,9 @@ def predefined_simulation():
     print_summary(model)
     print(extra)
 
+    animate_sir(df_sir)
     plot_results(df_sir, title=f"SIR Model Dynamics - {country_data['country_region']}", summary_text = summary_text)
+
 
 def run_stochastic_simulation():
     print("\n***** Stochastic SIR Simulation *****")
@@ -229,7 +233,10 @@ def run_stochastic_simulation():
     S, I, R = model.run_stochastic(steps=steps)
 
     df = pd.DataFrame({"time": range(len(S)), "S": S, "I": I, "R": R})
+    
+    animate_sir(df)
     plot_results(df, title="Stochastic SIR Model")
+
 
 def run_seir_simulation():
     print("\n***** SEIR Simulation *****")
@@ -251,7 +258,9 @@ def run_seir_simulation():
     S, E, I, R = model.run(steps=steps)
 
     df = pd.DataFrame({"time": range(len(S)), "S": S, "E": E, "I": I, "R": R})
+    animate_sir(df)
     plot_results(df, title="SEIR Model Dynamics")
+    
 
 
 def main():
