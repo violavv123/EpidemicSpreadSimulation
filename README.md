@@ -1,76 +1,157 @@
-Epidemic Spread Simulation – SIR Model
+# Simulimi i Përhapjes së Epidemive – Modeli SIR
 
-This project implements epidemic-spread simulations using SIR, SEIR, and stochastic models. It includes numerical solvers such as Euler and Runge-Kutta 4, multiple visualization methods, an interactive command-line interface, COVID-19 data-based scenarios, and six algorithmic experiments used for analyzing convergence, complexity, and parameter sensitivity.
+Ky projekt implementon simulime të përhapjes së epidemive duke përdorur modelet **SIR**, **SEIR** dhe **stohastike**. Projekti përfshin algoritme si **Euler** dhe **Runge–Kutta i rendit të katërt (RK4)**, metoda të ndryshme vizualizimi, një ndërfaqe interaktive në komandë (CLI), skenarë të bazuar në të dhëna reale të **COVID-19**, si dhe **gjashtë eksperimente algoritmike** për analizimin e konvergjencës, kompleksitetit dhe ndjeshmërisë ndaj parametrave.
 
-Project Structure
+Ky projekt është i dizajnuar me fokus në lëndën **Dizajni dhe Analiza e Algoritmeve** dhe në sjelljen numerike të modeleve epidemiologjike.
 
-The project is organized into the following folders:
+---
 
-sir/
-This folder contains all core modules of the simulation:
-model.py – Implements the deterministic SIR model with Euler and RK4 numerical solvers. Includes functions for peak infection time, final epidemic size, recovery dynamics, Rt calculation, and epidemic duration. The model outputs a DataFrame containing time, S, I, and R values.
-variants.py – Contains additional model variants. StochasticSIR introduces randomness using binomial sampling. SEIR implements the four-compartment model S → E → I → R.
-visualization.py – Provides animated line-graph visualization of S, I, and R over time.
-visualization_dots.py – Provides a dot-based human-style visualization where each individual is represented by a colored dot (susceptible, infected, recovered).
-experiments.py – Contains six predefined experiments used for numerical and algorithmic analysis. These include convergence studies, time complexity evaluation, parameter sweeps, beta and gamma influence demonstrations, and herd-immunity scenarios. The results are automatically saved into the experiments_output folder.
+## Struktura e Projektit
 
-covid_data/
-This folder contains the dataset country_wise_latest.csv, used for predefined simulation scenarios where the user selects a country and a corresponding SIR model is built from real-world data.
+Projekti është i organizuar në këto dosje dhe skedarë kryesorë:
 
-experiments_output/
-This folder holds all generated outputs from the experiments module. Files include CSV tables of computed values and PNG visualizations for convergence, time complexity, parameter sweeps, beta and gamma effects, and herd-immunity results.
+### sir/
 
-main.py
-This is the entry point of the project and provides an interactive menu interface. It allows the user to run:
-Manual SIR simulations with user-specified parameters
-Predefined scenarios using COVID-19 data
-Stochastic SIR simulations
-SEIR model simulations
-Different visualization options such as animated graphs, dot visualizations, and static plots are available through the menu.
+Kjo dosje përmban të gjitha modulet bazë të simulimit:
 
-Description of the Six Experiments
+- **model.py**  
+  Implementon modelin deterministik **SIR** duke përdorur metodat numerike **Euler** dhe **RK4**.  
+  Përfshin funksione për:
+  - kohën e kulmit të infektimit,
+  - madhësinë përfundimtare të epidemisë,
+  - dinamikën e shërimit,
+  - llogaritjen e numrit efektiv të riprodhimit \( R_t \),
+  - kohëzgjatjen e epidemisë.  
 
-The experiments implemented in sir/experiments.py are the following:
+  Rezultatet ruhen në një **DataFrame** me kolonat:
+  - time
+  - S (Susceptible)
+  - I (Infected)
+  - R (Recovered)
 
-Convergence Study
-Compares Euler and RK4 solvers for multiple time-step sizes. Shows how both methods behave as dt becomes smaller and how RK4 converges faster than Euler.
+- **variants.py**  
+  Përmban variante të tjera të modelit:
+  - **StochasticSIR** – model stohastik që fut rastësinë përmes shpërndarjes binomiale për infektimet dhe shërimet.
+  - **SEIR** – model me katër kompartimente epidemiologjike:  
+    \( S \rightarrow E \rightarrow I \rightarrow R \)
 
-Time Complexity Experiment
-Measures runtime against the number of numerical steps. Demonstrates that the simulation complexity grows linearly with respect to T/dt.
+- **visualization.py**  
+  Ofron vizualizim të animuar me grafikë lineare që tregojnë evolucionin e popullatës \( S, I, R \) në kohë.
 
-Parameter Sweep
-Runs the SIR model across a grid of beta and gamma values. Records peak infection counts and generates a heatmap to visualize how outbreak severity depends on model parameters.
+- **visualization_dots.py**  
+  Ofron vizualizim të stilit “human”, ku çdo individ përfaqësohet nga një pikë me ngjyrë:
+  - blu – individë të ndjeshëm (S),
+  - e kuqe – individë të infektuar (I),
+  - e gjelbër – individë të shëruar (R).
 
-Effect of Beta
-Shows how increasing the transmission rate causes earlier and stronger outbreaks.
+- **experiments.py**  
+  Përmban **gjashtë eksperimente të paracaktuara** për analizë numerike dhe algoritmike, si:
+  - studime konvergjence,
+  - matje të kompleksitetit kohor,
+  - analiza të ndjeshmërisë ndaj parametrave,
+  - skenarë të imunitetit të tufës.  
 
-Effect of Gamma
-Shows how increasing the recovery rate reduces outbreak intensity and lowers the infection peak.
+  Rezultatet ruhen automatikisht në dosjen **experiments_output**.
 
-Herd Immunity Scenario
-Varies the initial recovered population to demonstrate how pre-existing immunity can prevent or weaken outbreaks.
+---
 
-How to Run the Project
+### covid_data/
 
-Install dependencies by using:
-pip install numpy pandas matplotlib
+Kjo dosje përmban skedarin **country_wise_latest.csv**, i cili përdoret për skenarë simulimi të bazuar në të dhëna reale të **COVID-19**.  
+Përdoruesi zgjedh një shtet dhe ndërtohet një model **SIR** në bazë të të dhënave përkatëse të popullsisë, rasteve aktive, të shëruarve dhe vdekjeve.
 
-Run the main interactive program:
+---
+
+### experiments_output/
+
+Kjo dosje përmban të gjitha rezultatet e gjeneruara nga moduli i eksperimenteve, duke përfshirë:
+
+- tabela **CSV** me vlera numerike,
+- figura **PNG** për:
+  - konvergjencën e metodave numerike,
+  - kompleksitetin kohor,
+  - analizat e parametrave,
+  - efektet e \( \beta \) dhe \( \gamma \),
+  - skenarët e imunitetit të tufës.
+
+---
+
+### main.py
+
+Ky është skedari kryesor i ekzekutimit të projektit.  
+Ai ofron një **menu interaktive**, përmes së cilës përdoruesi mund të ekzekutojë:
+
+- simulime manuale **SIR** me parametra të zgjedhur nga përdoruesi,
+- skenarë të paracaktuar duke përdorur të dhëna reale të **COVID-19**,
+- simulime **SIR stohastike**,
+- simulime **SEIR**.
+
+Gjithashtu, për secilën simulim janë të disponueshme disa mënyra vizualizimi:
+- grafikë të animuar me vija,
+![grafikë të animuar me vija](images/animated_graph.png)
+
+- vizualizim me pika që përfaqësojnë individë,
+![fillimi i animacionit me individë](images/visualization_dots_B.png) 
+![fundi i animacionit me individë](images/visualization_dots_E.png)
+
+- grafikë statike.
+![grafi statik](images/predefined_scenarios.png)
+
+---
+
+## Përshkrimi i Gjashtë Eksperimenteve
+
+Eksperimentet e implementuara në `sir/experiments.py` janë:
+
+### 1. Studimi i Konvergjencës
+Krahason metodat **Euler** dhe **RK4** për madhësi të ndryshme të hapit kohor \( dt \).  
+Tregon se si saktësia rritet kur \( dt \) zvogëlohet dhe se **RK4 konvergon më shpejt** se metoda Euler.
+![studimi i konvergjencës](experiments_output/convergence_error_peak.png)
+
+### 2. Eksperimenti i Kompleksitetit Kohor
+Mat kohën e ekzekutimit të simulimit në varësi të numrit të hapave numerikë.  
+Demonstron se kompleksiteti kohor rritet **linearisht** me raportin \( T / dt \).
+![kompleksiteti kohor](experiments_output/time_complexity.png)
+
+### 3. Analiza e parametrave (Parameter Sweep)
+Ekzekuton modelin **SIR** për një rrjet vlerash të \( \beta \) dhe \( \gamma \).  
+Regjistron kulmin e infektimit dhe krijon **heatmap** për të vizualizuar ndjeshmërinë e sistemit ndaj parametrave.
+![parameter sweep](experiments_output/sweep_heatmap.png)
+
+### 4. Efekti i parametrit Beta
+Tregon se rritja e normës së transmetimit \( \beta \):
+- shkakton epidemi më të hershme,
+- rrit numrin maksimal të të infektuarve,
+- përshpejton përhapjen e sëmundjes.
+![efekti i betas](experiments_output/effect_beta.png)
+
+### 5. Efekti i parametrit Gamma
+Tregon se rritja e normës së shërimit \( \gamma \):
+- ul intensitetin e epidemisë,
+- zvogëlon kulmin e infektimit,
+- përshpejton përfundimin e epidemisë.
+![efekti i gammas](experiments_output/effect_gamma.png)
+
+### 6. Skenari i Imunitetit të tufës
+Ndryshon numrin fillestar të individëve të shëruar për të demonstruar se:
+- imuniteti paraprak mund të dobësojë përhapjen e epidemisë,
+- ose ta parandalojë plotësisht atë.
+![imuniteti](experiments_output/herd_immunity.png)
+
+---
+
+## Si të Ekzekutohet Projekti
+- Ekzekutimi i programit interaktiv:  
+```bash
 python main.py
+````
+- Ekzekutimi i eksperimenteve:     
+```bash
+python -m sir.experiments
+```
 
-Run all six experiments:
-python sir/experiments.py
+### Instalimi i varësive
 
-All experiment results will appear in the experiments_output folder.
-
-Purpose of the Project
-
-The project is designed to study:
-Differences between numerical solvers such as Euler and RK4
-Convergence and accuracy of epidemic models
-Algorithmic time complexity of numerical integration
-Parameter sensitivity of epidemiological systems
-Deterministic versus stochastic epidemic dynamics
-Real-world applicability using COVID-19 data
-
-It provides both theoretical and practical insight into epidemic modeling and numerical algorithm behavior for educational and research use.
+```bash
+pip install numpy pandas matplotlib
+```
