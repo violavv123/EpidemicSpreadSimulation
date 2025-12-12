@@ -99,44 +99,44 @@ Gjithashtu, për secilën simulim janë të disponueshme disa mënyra vizualizim
 
 ---
 
-## Përshkrimi i Gjashtë Eksperimenteve
+## Përshkrimi i eksperimenteve
 
 Eksperimentet e implementuara në `sir/experiments.py` janë:
 
 ### 1. Studimi i Konvergjencës
 Krahason metodat **Euler** dhe **RK4** për madhësi të ndryshme të hapit kohor \( dt \).  
 Tregon se si saktësia rritet kur \( dt \) zvogëlohet dhe se **RK4 konvergon më shpejt** se metoda Euler.
-![studimi i konvergjencës](experiments_output/convergence_error_peak.png)
+![studimi i konvergjencës](images/convergence_error_peak.png)
 
 ### 2. Eksperimenti i Kompleksitetit Kohor
 Mat kohën e ekzekutimit të simulimit në varësi të numrit të hapave numerikë.  
 Demonstron se kompleksiteti kohor rritet **linearisht** me raportin \( T / dt \).
-![kompleksiteti kohor](experiments_output/time_complexity.png)
+![kompleksiteti kohor](images/time_complexity.png)
 
 ### 3. Analiza e parametrave (Parameter Sweep)
 Ekzekuton modelin **SIR** për një rrjet vlerash të \( \beta \) dhe \( \gamma \).  
 Regjistron kulmin e infektimit dhe krijon **heatmap** për të vizualizuar ndjeshmërinë e sistemit ndaj parametrave.
-![parameter sweep](experiments_output/sweep_heatmap.png)
+![parameter sweep](images/sweep_heatmap.png)
 
 ### 4. Efekti i parametrit Beta
 Tregon se rritja e normës së transmetimit \( \beta \):
 - shkakton epidemi më të hershme,
 - rrit numrin maksimal të të infektuarve,
 - përshpejton përhapjen e sëmundjes.
-![efekti i betas](experiments_output/effect_beta.png)
+![efekti i betas](images/effect_beta.png)
 
 ### 5. Efekti i parametrit Gamma
 Tregon se rritja e normës së shërimit \( \gamma \):
 - ul intensitetin e epidemisë,
 - zvogëlon kulmin e infektimit,
 - përshpejton përfundimin e epidemisë.
-![efekti i gammas](experiments_output/effect_gamma.png)
+![efekti i gammas](images/effect_gamma.png)
 
 ### 6. Skenari i Imunitetit të tufës
 Ndryshon numrin fillestar të individëve të shëruar për të demonstruar se:
 - imuniteti paraprak mund të dobësojë përhapjen e epidemisë,
 - ose ta parandalojë plotësisht atë.
-![imuniteti](experiments_output/herd_immunity.png)
+![imuniteti](images/herd_immunity.png)
 
 ---
 
