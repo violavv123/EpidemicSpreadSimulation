@@ -118,3 +118,80 @@ def parameter_sweep():
     plt.close()
 
     return df
+
+def effect_of_beta():
+
+    betas = [0.1, 0.2, 0.3, 0.4]
+    plt.figure()
+
+    for b in betas:
+        model = SIR(1000, 10, 0, b, 0.1, T=160, dt=0.1)
+        df = model.run()
+        plt.plot(df["time"], df["I"], label=f"beta={b}")
+
+    plt.xlabel("Time")
+    plt.ylabel("Infected")
+    plt.title("Effect of Beta on Infections")
+    plt.legend()
+    plt.savefig(OUTPUT_DIR / "effect_beta.png")
+    plt.close()
+
+def effect_of_gamma():
+
+    gammas = [0.05, 0.1, 0.2, 0.3]
+    plt.figure()
+
+    for g in gammas:
+        model = SIR(1000, 10, 0, 0.3, g, T=160, dt=0.1)
+        df = model.run()
+        plt.plot(df["time"], df["I"], label=f"gamma={g}")
+
+    plt.xlabel("Time")
+    plt.ylabel("Infected")
+    plt.title("Effect of Gamma on Infections")
+    plt.legend()
+    plt.savefig(OUTPUT_DIR / "effect_gamma.png")
+    plt.close()
+
+def herd_immunity():
+
+    R0_values = [0, 100, 300, 600]
+    N = 1000
+    plt.figure()
+
+    for R0_init in R0_values:
+        model = SIR(N, 10, R0_init, beta=0.3, gamma=0.1, T=160, dt=0.1)
+        df = model.run()
+        plt.plot(df["time"], df["I"], label=f"R0={R0_init}")
+
+    plt.xlabel("Time")
+    plt.ylabel("Infected")
+    plt.title("Herd Immunity Scenario")
+    plt.legend()
+    plt.savefig(OUTPUT_DIR / "herd_immunity.png")
+    plt.close()
+
+def run_all():
+    print("Running convergence study...")
+    convergence_study()
+
+    print("Running time complexity experiment...")
+    time_complexity_experiment()
+
+    print("Running parameter sweep...")
+    parameter_sweep()
+
+    print("Running effect of beta...")
+    effect_of_beta()
+
+    print("Running effect of gamma...")
+    effect_of_gamma()
+
+    print("Running herd immunity experiment...")
+    herd_immunity()
+
+    print("All experiments saved in 'experiments_output/'.")
+
+
+if __name__ == "__main__":
+    run_all()
